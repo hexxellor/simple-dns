@@ -13,13 +13,11 @@ CPPFLAGS = -Wall -g -O0 -DBOOST_ALL_NO_LIB=1 -DBOOST_SYSTEM_DYN_LINK=1
 ########################################################################
 ROOT_DIR = ..
 
-BOOST_DIR = /home/tengjiao.zhao/code/mywork/boost_1_41_0
-
 VPATH = $(ROOT_DIR)/src/ : $(ROOT_DIR)/src/include : $(ROOT_DIR)/src/common : $(ROOT_DIR)/src/main 
 
 CPP_SRCS = main.cpp
 
-INCS = 	-I$(BOOST_DIR) \
+INCS = 	-I$$BOOST_DIR \
 	-I$(ROOT_DIR)/src \
 	-I$(ROOT_DIR)/src/include \
 	-I$(ROOT_DIR)/src/common \
