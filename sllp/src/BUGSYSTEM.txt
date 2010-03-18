@@ -1,0 +1,9 @@
+BUG#1 Description: The client can not connect the echo server.
+      Reason:
+	1. The port of sockaddr_in.sin_port did not converts it to network bytes order.
+	2. The timeout of sllp_select did set correct. Convert a ms to second, we need use ms/1000, and to usec is a usec % 1000 * 1E6.
+	3. We must clear the output result, before fill with the results.
+
+BUG#2 Description: Memory leak and the size of input list of select                         is coutinously increase.
+      Reason:
+	1. We need remove the client from inputlist and release the client's sock object, when the client disconnect.

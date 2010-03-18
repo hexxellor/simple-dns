@@ -15,6 +15,7 @@ int32_t set2list(struct sllp_socket_list* inlist, fd_set* set, struct sllp_socke
 
 void socket_list_append(struct sllp_socket_list* list, struct sllp_socket* sock);
 void socket_list_remove(struct sllp_socket_list* list, struct sllp_socket* sock);
+void socket_list_clean(struct sllp_socket_list* list);
 u_int32_t socket_list_have(struct sllp_socket_list*, struct sllp_socket*);
 /* end function declaration */
 
@@ -92,7 +93,7 @@ int32_t epoll_internal_ctl(int32_t epfd, struct sllp_socket* sock, int32_t cmd, 
 
 int32_t seq2set(struct sllp_socket_list *list, fd_set *set)
 {
-    int32_t i, max = 0;
+    int32_t i, max = -1;
 
     FD_ZERO(set);
     for (i = 0; i < list->count; ++i)
@@ -108,7 +109,7 @@ int32_t seq2set(struct sllp_socket_list *list, fd_set *set)
 	    max = v;
 	FD_SET(v, set);
     }
-    return max;
+    return max + 1;
 
   finally:
     return -1;
@@ -125,7 +126,7 @@ int32_t set2list(struct sllp_socket_list* inlist, fd_set* set, struct sllp_socke
 	fd = inlist->socks[i]->fd;
 	if (FD_ISSET(fd, set))
 	{
-	    outlist->socks[i] = inlist->socks[i];
+	    outlist->socks[outlist->count] = inlist->socks[i];
 	    ++(outlist->count);
 	}
     }
@@ -142,12 +143,19 @@ struct sllp_socket_list* sllp_create_socket_list()
     slist->count = 0;
     slist->append = socket_list_append;
     slist->remove = socket_list_remove;
+    slist->clean  = socket_list_clean;
     slist->have = socket_list_have;
     return slist;
 }
 
-void sllp_free_socket_list(struct sllp_socket_list* list)
+void sllp_free_socket_list(struct sllp_socket_list* list, int32_t on)
 {
+    int32_t i;
+    if (on)
+    {
+	for (i = 0; i < list->count; ++i)
+	    sllp_free_socket(list->socks[i]);
+    }
     list->count = 0;
     free(list);
 }
@@ -174,6 +182,11 @@ void socket_list_remove(struct sllp_socket_list* list, struct sllp_socket* sock)
     }
     list->socks[list->count - 1] = NULL;
     --list->count;
+}
+
+void socket_list_clean(struct sllp_socket_list* list)
+{
+    list->count = 0;
 }
 
 u_int32_t socket_list_have(struct sllp_socket_list* list, struct sllp_socket* sock)
@@ -205,16 +218,22 @@ int32_t sllp_select(struct sllp_socket_list* rlist,
 	tvp = NULL;	/* always wait */
     else
     {	
-	tv.tv_sec  = (int32_t)timeout / 1E9;		/* get seconds*/
-	tv.tv_usec = (int32_t)timeout % 1000000000 * 1E6;	/* get ms */
+	tv.tv_sec  = (int32_t)timeout / 1000;		/* get seconds*/
+	tv.tv_usec = (int32_t)timeout % 1000 * 1E6;	/* get ms */
 	tvp = &tv;
     }
+
+    imax = omax = emax = max = -1;
+
+    FD_ZERO(&ifdset);
+    FD_ZERO(&ofdset);
+    FD_ZERO(&efdset);
     
-    if (rlist && ((imax = seq2set(rlist, &ifdset)) < 0))
+    if (rlist && (imax = seq2set(rlist, &ifdset)) < 0)
 	return -1;
-    if (wlist && ((omax = seq2set(wlist, &ofdset)) < 0))
+    if (wlist && (omax = seq2set(wlist, &ofdset)) < 0)
 	return -1;
-    if (elist && ((emax = seq2set(elist, &efdset)) < 0))
+    if (elist && (emax = seq2set(elist, &efdset)) < 0)
 	return -1;
 
     max = imax;
@@ -228,6 +247,7 @@ int32_t sllp_select(struct sllp_socket_list* rlist,
 	return 0;	/* timeout */
     else
     {
+	result->rlist->clean(result->rlist);
 	if (result->rlist)
 	    set2list(rlist, &ifdset, result->rlist);
 	if (result->wlist)

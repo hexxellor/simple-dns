@@ -47,12 +47,13 @@ int32_t sllp_free_epoll(struct sllp_epoll* epoll);
 struct sllp_socket_list{
     void (*append)(struct sllp_socket_list*, struct sllp_socket*);
     void (*remove)(struct sllp_socket_list*, struct sllp_socket*);
-    u_int32_t (*have)(struct sllp_socket_list*, struct sllp_socket*);
+    void (*clean)(struct sllp_socket_list*);
+    u_int32_t (*have)(struct sllp_socket_list*, struct sllp_socket*);    
     struct sllp_socket *socks[FD_SETSIZE + 1];
     u_int32_t count;
 };
 struct sllp_socket_list* sllp_create_socket_list();
-void sllp_free_socket_list(struct sllp_socket_list* list);
+void sllp_free_socket_list(struct sllp_socket_list* list, int32_t on);
 
 struct sllp_select_result{
 	struct sllp_socket_list* rlist;

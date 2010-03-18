@@ -171,7 +171,7 @@ static int32_t sllp_address2sas(struct sllp_address* addr, struct sockaddr_in* s
 	return -1;
     /* TODOList: need to support other protocol */
     sas->sin_family = AF_INET;
-    sas->sin_port = addr->port;
+    sas->sin_port = htons(addr->port);
     sas->sin_addr.s_addr = sllp_inet_aton(addr->host);
     return 0;
 }
@@ -184,7 +184,7 @@ static int32_t sllp_sas2address(struct sockaddr_in* sas, struct sllp_address* ad
     char* ip;
     ip = inet_ntoa(sas->sin_addr);
     strcpy(addr->host, ip);
-    addr->port = sas->sin_port;
+    addr->port = ntohs(sas->sin_port);
     return 0;
 }
 
