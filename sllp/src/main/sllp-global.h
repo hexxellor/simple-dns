@@ -17,6 +17,41 @@
 #ifndef __SLLP_GLOBAL_H_
 #define __SLLP_GLOBAL_H_
 
-#included <sys/types.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h> 
+#include <sys/un.h>
+#include <netpacket/packet.h>
+#include <net/ethernet.h>     /* the L2 protocols */
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/epoll.h>
+
+#include <string.h>
+#include <memory.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
+
+/* type */
+typedef int SOCKET_T;
+
+/* service define */
+#define SLLP_SERV_DATE	1
+#define SLLP_SERV_FTP	2
+
+/* service port define */
+#define SLLP_SERV_FTP_PORT	21
+
+/* limit */
+#define SLLP_ADDRESS_LEN	32
+
+#define SOCKETCLOSE(x)	\
+    close(x)
+
+#define	SAS2SA(x) 	\
+    ((struct sockaddr *)(x))
 
 #endif

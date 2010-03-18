@@ -1,9 +1,7 @@
-
-#include <stdlib.h>
-#include <stdio.h>
+#include "test.h"
 
 int main(void)
 {
-	printf("project test\n");
-	return 0;
+    create_echo();
+    return 0;
 }

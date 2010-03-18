@@ -15,7 +15,7 @@ ROOT_DIR = ..
 
 VPATH = $(ROOT_DIR)/include : $(ROOT_DIR)/main
 
-C_SRCS = main.c
+C_SRCS = main.c sllp-socket.c sllp-select.c echo.c snif.c
 
 CPP_SRCS = 
 
