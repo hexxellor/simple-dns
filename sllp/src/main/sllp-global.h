@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
+#include <assert.h>
 
 /* type */
 typedef int SOCKET_T;
@@ -53,5 +54,11 @@ typedef int SOCKET_T;
 
 #define	SAS2SA(x) 	\
     ((struct sockaddr *)(x))
+
+#define MAKE_WORD3(w0, w1, w2)		\
+    MAKE_WORD4(w0, w1, w2, 0)
+
+#define MAKE_WORD4(w0, w1, w2, w3)	\
+    ((w0 << 24) | (w1 << 16) | (w2 << 8) | w3)
 
 #endif

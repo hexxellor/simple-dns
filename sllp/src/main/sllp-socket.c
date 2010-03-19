@@ -416,10 +416,7 @@ u_int32_t sllp_inet_aton(char *ip_string)
 {
     u_int32_t packed_addr;
     
-    if (!strcmp(ip_string, "0.0.0.0"))
-	packed_addr = INADDR_ANY;
-    else
-	packed_addr = inet_addr(ip_string);
+    packed_addr = inet_addr(ip_string);
     return packed_addr;
 }
 

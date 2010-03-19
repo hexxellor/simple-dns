@@ -247,13 +247,21 @@ int32_t sllp_select(struct sllp_socket_list* rlist,
 	return 0;	/* timeout */
     else
     {
-	result->rlist->clean(result->rlist);
 	if (result->rlist)
+	{
+	    result->rlist->clean(result->rlist);
 	    set2list(rlist, &ifdset, result->rlist);
+	}
 	if (result->wlist)
+	{
+	    result->wlist->clean(result->wlist);
 	    set2list(wlist, &ofdset, result->wlist);
+	}
 	if (result->elist)
+	{
+	    result->elist->clean(result->elist);
 	    set2list(elist, &efdset, result->elist);
+	}
     }
     return 1;
 }
