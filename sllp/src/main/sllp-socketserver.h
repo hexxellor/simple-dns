@@ -19,7 +19,7 @@ struct sllp_request;
     int32_t request_queue_size;			\
     struct sllp_address	addr;			\
     int32_t __serving;				\
-    struct sllp_socket_list *__requst_list
+    struct sllp_list *__requst_list
 
 
 #define SERVER_PUBLIC_METHOD						\
@@ -38,7 +38,7 @@ struct sllp_request;
     int32_t (*__handle_error)	(struct sllp_server*, struct sllp_request* request); \
     int32_t (*__handle_request_noblock)(struct sllp_server*);		\
     int32_t (*__finish_request)(struct sllp_server*, struct sllp_request* request); \
-    struct sllp_socket* (*__get_request)(struct sllp_server*)
+    struct sllp_request* (*__get_request)(struct sllp_server*)
 
 struct sllp_server{
     SERVER_HEADER;
@@ -53,8 +53,9 @@ void sllp_free_udpserver(struct sllp_server* server);
 
 struct sllp_request{
     struct sllp_socket* sock;
-    u_int8_t 		data[MAX_PACKETSIZE];
-    u_int16_t		len;
+    u_int8_t 		data[SLLP_MAX_PACKETSIZE];
+    u_int16_t		bufsize;	/* max buf size */
+    u_int16_t		recvlen;    	/* received data len */
 };
 
 #endif

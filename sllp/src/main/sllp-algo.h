@@ -5,10 +5,9 @@
 
 typedef void(*element_free_hooker)(u_long*);
 
-typedef struct tag_list_node{
-    u_long* data;
-    u_long* next;
-}sllp_list_node;
+struct _list_node;
+typedef struct _list_node sllp_list_node;
+
 /*
  * Note: we use u_long to indicate pointer type. At the plantform of 32-bit,
  *	 the size of u_long is 32bit, and on 64-bit is 64bit.

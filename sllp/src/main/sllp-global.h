@@ -48,7 +48,7 @@ typedef int SOCKET_T;
 
 /* limit */
 #define SLLP_ADDRESS_LEN	32
-#define SLLP_MAX_PACKET_SIZE	496	/* The default MSS of TCP is: 576, 
+#define SLLP_MAX_PACKETSIZE	496	/* The default MSS of TCP is: 576, 
 					 * and size of IP header is 20,
 					 * max size of tcp header is 60,
 					 * so 496 = 576 - 20 - 60;
