@@ -2,13 +2,12 @@
 #define __SLLP_UTIL_H_
 
 #include "sllp-global.h"
+#include "sllp-socketserver.h"
 
-struct sllp_list{
-	u_long* header;
-	u_long* next;
-	u_int32_t count;
-};
-u_int32_t sllp_ds_list_append(struct sllp_list* list, u_long new);
-u_int32_t sllp_ds_list_remove(struct sllp_list* list, u_long sock);	
+int32_t sllp_process_request_echo(struct sllp_server* server, struct sllp_socket* request);
+int32_t sllp_handle_error(struct sllp_server* server, struct sllp_socket* request);
+int32_t sllp_handle_timeout(struct sllp_server* server);
+int32_t sllp_verify_request(struct sllp_server* server, struct sllp_socket* request);
+int32_t sllp_server_close(struct sllp_server* server);
 
 #endif

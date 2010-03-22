@@ -22,8 +22,8 @@ int8_t create_snif(void)
     sock = sllp_create_socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
     assert(sock);
 
-    sock->setsockopt(sock, IPPROTO_IP, IP_HDRINCL, (void*)&OPT_ON, sizeof(OPT_ON));
-    sock->setblocking(sock, OPT_ON);
+    sock->setsockopt(sock, IPPROTO_IP, IP_HDRINCL, (void*)&ON, sizeof(ON));
+    sock->setblocking(sock, ON);
 
     printf("snif start\n");
     while (!snif_abort)

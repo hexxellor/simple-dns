@@ -32,6 +32,7 @@ struct sllp_socket_pair{
     struct sllp_socket* s0;
     struct sllp_socket*	s1;
 };
+
 /**
  * assign the 'host' and 'port' to the 'address.
  */
@@ -153,8 +154,5 @@ struct sllp_socket{
     u_int32_t			proto;
     int32_t			timeout;
 };
-
-extern int32_t	OPT_ON;
-extern int32_t	OPT_OFF;
 
 #endif

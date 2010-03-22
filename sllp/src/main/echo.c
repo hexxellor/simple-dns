@@ -16,7 +16,7 @@ int8_t create_echo(void)
     sllp_make_address("0.0.0.0", 1234, &addr);
     server = sllp_create_socket(AF_INET, SOCK_STREAM, 0);
 
-    server->setsockopt(server, SOL_SOCKET, SO_REUSEADDR, (void*)&OPT_ON, sizeof(OPT_ON));
+    server->setsockopt(server, SOL_SOCKET, SO_REUSEADDR, (void*)&ON, sizeof(ON));
     server->bind(server, &addr);
     server->listen(server, 5);
 
@@ -59,8 +59,8 @@ int8_t create_echo(void)
 	    }
 	}
     }
-    sllp_free_socket_list(rlist, OPT_ON);
-    sllp_free_socket_list(outlist, OPT_OFF);	/* because the rlist and outlist is share the socket objct,
+    sllp_free_socket_list(rlist, ON);
+    sllp_free_socket_list(outlist, OFF);	/* because the rlist and outlist is share the socket objct,
 						   so, when we release the rlist, the socket objct has been
 						   released.
 						 */

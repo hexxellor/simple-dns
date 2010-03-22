@@ -35,8 +35,8 @@ int32_t sock_shutdown(struct sllp_socket* sock, u_int32_t how);
 /* end function declare */
 
 static u_int32_t defaulttimeout = -1;
-int32_t	OPT_ON 	= 1;
-int32_t	OPT_OFF = 0;
+const int32_t ON = 1;
+const int32_t OFF = 0;
 
 static struct sllp_socket_pair* new_sllp_socket_pair(struct sllp_socket* s0, struct sllp_socket* s1)
 {
