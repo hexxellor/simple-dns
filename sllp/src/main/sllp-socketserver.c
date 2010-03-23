@@ -3,7 +3,7 @@
 #include "sllp-algo.h"
 
 /* function declare */
-static struct sllp_request* create_request();
+static struct sllp_request* create_request(struct sllp_server*server);
 static void free_request(u_long* request);
 
 struct sllp_server* internal_create_server(int32_t type);
@@ -42,7 +42,6 @@ struct sllp_server* internal_create_server(int32_t type)
     server->type = type;
     server->allow_reuse_address = 1;
     server->timeout = 1;
-    server->__requst_list = sllp_create_list();
 
     server->server_forever = server_server_forever;
     server->shutdown = server_shutdown;
@@ -62,6 +61,8 @@ struct sllp_server* internal_create_server(int32_t type)
 	server->__server_activate = udp__server_activate;
 	server->__close_request = udp__close_request;
 	server->__get_request = udp__get_request;
+
+	server->__udp_request = create_request(server);
     }
     else if (server->type == MAKE_WORD3('T','C','P'))
     {
@@ -77,7 +78,6 @@ struct sllp_server* internal_create_server(int32_t type)
 
 void internal_free_server(struct sllp_server* server)
 {
-    sllp_free_list(server->__requst_list, free_request);
     free(server);
 }
 
@@ -148,7 +148,9 @@ int32_t server_handle_request(struct sllp_server* server)
 /*
  * The following is the private function
  */
-
+/* 
+ * Process Short Community.
+ */
 int32_t server__handle_request_noblock(struct sllp_server *server)
 {
     struct sllp_request *request;
@@ -173,8 +175,9 @@ int32_t server__handle_request_noblock(struct sllp_server *server)
     else if (ret == -2)
     {	/* occur an error */
 	server->__handle_error(server, request);
-	server->__close_request(server, request);
     }
+    
+    server->__close_request(server, request);
 
     return 0;
 }
@@ -201,9 +204,6 @@ int32_t server__server_bind(struct sllp_server* server, struct sllp_address *add
 
 int32_t server__server_close(struct sllp_server* server)
 {
-    /* Free the request */
-    sllp_free_list(server->__requst_list, free_request);
-
     /* close the server socket */
     server->__server_close(server);
     sllp_free_socket(server->sock);
@@ -279,7 +279,6 @@ struct sllp_request* tcp__get_request(struct sllp_server* server)
 
     request = create_request(server);
     request->sock = server->sock->accept(server->sock);
-    server->__requst_list->append(server->__requst_list, (u_long*)request);
     return request;
 }
 
@@ -292,7 +291,6 @@ int32_t tcp__server_activate(struct sllp_server* server)
 int32_t tcp__close_request(struct sllp_server* server, struct sllp_request* request)
 {
     free_request((u_long*)request);
-    server->__requst_list->remove(server->__requst_list, (u_long*)request);
     return 0;
 }
 
@@ -302,10 +300,14 @@ int32_t tcp__close_request(struct sllp_server* server, struct sllp_request* requ
 struct sllp_request* udp__get_request(struct sllp_server* server)
 {
     struct sllp_request* request;
+    struct sllp_socket* sock;
     int32_t len;
 
-    request = create_request(server);
-    len = request->sock->recvfrom(request->sock, request->data, request->bufsize, 0, &request->sock->address);
+    request = server->__udp_request;
+    sock = request->sock;
+
+    memset(request->data, 0, request->bufsize);
+    len = sock->recvfrom(sock, request->data, request->bufsize, 0, &request->sock->address);
     request->recvlen = len;
     return request;
 }
@@ -318,7 +320,6 @@ int32_t udp__server_activate(struct sllp_server* server)
 
 int32_t udp__close_request(struct sllp_server* server, struct sllp_request* request)
 {
-    server->__requst_list->remove(server->__requst_list, (u_long*)request);
     return 0;
 }
 

@@ -19,7 +19,8 @@ struct sllp_request;
     int32_t request_queue_size;			\
     struct sllp_address	addr;			\
     int32_t __serving;				\
-    struct sllp_list *__requst_list
+    /* For UDP*/				\
+    struct sllp_request* __udp_request
 
 
 #define SERVER_PUBLIC_METHOD						\
